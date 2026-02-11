@@ -6,14 +6,17 @@ import About from './components/About';
 import SponsorsSection from './components/SponsorsSection';
 import RegistrationSection from './components/RegistrationSection';
 import FAQSection from './components/FAQSection';
+import TestimonialsSection from './components/TestimonialsSection';
 import WhatsAppButton from './components/WhatsAppButton';
 import Footer from './components/Footer';
 import EventPopup from './components/EventPopup';
 import AuthModal from './components/AuthModal';
+import ShareModal from './components/ShareModal';
 
 const App: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const [user, setUser] = useState<{ fullName: string; email: string } | null>(null);
 
   useEffect(() => {
@@ -72,6 +75,7 @@ const App: React.FC = () => {
         <Hero 
           onRegisterClick={handleRegisterClick} 
           onLearnMoreClick={handleAboutClick}
+          onShareClick={() => setShowShare(true)}
         />
         
         <div id="about" className="scroll-mt-24">
@@ -88,6 +92,10 @@ const App: React.FC = () => {
 
         <div id="faq" className="scroll-mt-24">
           <FAQSection />
+        </div>
+
+        <div id="testimonials" className="scroll-mt-24">
+          <TestimonialsSection />
         </div>
       </main>
 
@@ -106,6 +114,12 @@ const App: React.FC = () => {
         <AuthModal 
           onClose={() => setShowAuth(false)} 
           onSuccess={handleAuthSuccess}
+        />
+      )}
+
+      {showShare && (
+        <ShareModal 
+          onClose={() => setShowShare(false)} 
         />
       )}
     </div>

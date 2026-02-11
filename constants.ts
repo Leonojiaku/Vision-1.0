@@ -45,6 +45,27 @@ export const FAQ_DATA = [
   }
 ];
 
+export const TESTIMONIALS = [
+  {
+    name: "Victory Emmanuel",
+    role: "Lead Organizer",
+    text: "Vision 1.0 is the heartbeat of FUTO innovation. We are creating a space where dreams aren't just seen, but executed. The talent we see every year is simply breathtaking.",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Victory"
+  },
+  {
+    name: "Amara Okafor",
+    role: "Creative Participant",
+    text: "The energy was electric. I came with a small idea and left with a network of founders and mentors. Absolutely transformative experience for any student with a vision.",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Amara"
+  },
+  {
+    name: "David Chen",
+    role: "Tech Innovator",
+    text: "Pitching my project at Vision was a turning point. The feedback from judges was world-class and really sharpened my tech roadmap. This stage is where careers begin.",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=David"
+  }
+];
+
 export const SPONSORS: Sponsor[] = [
   { name: "Pixel Nox", tier: "Diamond", logo: "https://api.dicebear.com/7.x/shapes/svg?seed=PixelNox&backgroundColor=4c1d95" },
   { name: "Divine Bites", tier: "Diamond", logo: "https://api.dicebear.com/7.x/shapes/svg?seed=DivineBites&backgroundColor=db2777" },

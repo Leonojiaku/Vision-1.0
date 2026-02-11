@@ -13,17 +13,6 @@ const SponsorsSection: React.FC = () => {
     (sponsor) => activeFilter === 'All' || sponsor.tier === activeFilter
   );
 
-  // Helper to handle image load errors gracefully
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, name: string) => {
-    const target = e.target as HTMLImageElement;
-    const fallbackUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=4c1d95,7c3aed,db2777&fontFamily=Outfit&fontWeight=700`;
-    
-    // Prevent infinite loop if fallback also fails
-    if (target.src !== fallbackUrl) {
-      target.src = fallbackUrl;
-    }
-  };
-
   return (
     <section className="py-24 px-6 relative overflow-hidden">
       {/* Decorative background elements */}
@@ -55,47 +44,30 @@ const SponsorsSection: React.FC = () => {
           </div>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 min-h-[400px]">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 min-h-[300px]">
           {filteredSponsors.map((sponsor, idx) => (
             <div 
               key={`${sponsor.name}-${idx}`}
-              className="glass p-6 rounded-[2rem] border border-white/5 hover:border-purple-500/50 hover:bg-white/10 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 group flex flex-col items-center justify-between text-center min-h-[180px] animate-in fade-in zoom-in-95 duration-500"
+              className="glass p-8 rounded-[2rem] border border-white/5 hover:border-purple-500/50 hover:bg-white/10 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 group flex flex-col items-center justify-center text-center min-h-[140px] animate-in fade-in zoom-in-95 duration-500"
             >
-              <div className="flex-grow flex items-center justify-center w-full mb-4">
-                <div className="relative w-20 h-20 group-hover:scale-110 transition-transform duration-500 ease-out">
-                  {/* Subtle glow effect behind the logo */}
-                  <div className="absolute inset-0 bg-purple-500/0 group-hover:bg-purple-500/20 blur-xl rounded-full transition-all duration-500"></div>
-                  
-                  <img 
-                    src={sponsor.logo || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(sponsor.name)}`} 
-                    alt={`${sponsor.name} logo`} 
-                    className="relative z-10 w-full h-full object-contain rounded-2xl p-1 bg-white/5 border border-white/5 group-hover:border-purple-500/30 group-hover:drop-shadow-[0_0_15px_rgba(168,85,247,0.5)] transition-all duration-500"
-                    onError={(e) => handleImageError(e, sponsor.name)}
-                  />
-                </div>
-              </div>
-              
-              <div className="w-full">
-                <h3 className="font-bold text-sm md:text-base mb-2 truncate px-2 group-hover:text-white transition-colors">{sponsor.name}</h3>
-                <span className={`inline-block text-[9px] font-black uppercase tracking-[0.15em] px-3 py-1 rounded-full transition-all duration-300 ${
-                  sponsor.tier === 'Diamond' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20 group-hover:bg-blue-500/20' :
-                  sponsor.tier === 'Gold' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 group-hover:bg-yellow-500/20' :
-                  sponsor.tier === 'Silver' ? 'bg-slate-500/10 text-slate-300 border border-slate-500/20 group-hover:bg-slate-500/20' :
-                  'bg-purple-500/10 text-purple-400 border border-purple-500/20 group-hover:bg-purple-500/20'
-                }`}>
-                  {sponsor.tier}
-                </span>
-              </div>
+              <h3 className="font-bold text-lg md:text-xl mb-3 tracking-tight group-hover:text-purple-400 transition-colors">
+                {sponsor.name}
+              </h3>
+              <span className={`inline-block text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full transition-all duration-300 ${
+                sponsor.tier === 'Diamond' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20 group-hover:bg-blue-500/20' :
+                sponsor.tier === 'Gold' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 group-hover:bg-yellow-500/20' :
+                sponsor.tier === 'Silver' ? 'bg-slate-500/10 text-slate-300 border border-slate-500/20 group-hover:bg-slate-500/20' :
+                'bg-purple-500/10 text-purple-400 border border-purple-500/20 group-hover:bg-purple-500/20'
+              }`}>
+                {sponsor.tier}
+              </span>
             </div>
           ))}
           
-          {/* Become a Sponsor Card - Always Visible */}
-          <div className="glass p-8 rounded-[2rem] border border-dashed border-white/20 flex flex-col items-center justify-center text-center min-h-[180px] group hover:bg-purple-500/5 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 cursor-pointer transition-all duration-500">
-            <div className="w-12 h-12 rounded-full border-2 border-slate-700 flex items-center justify-center mb-4 group-hover:border-purple-500 group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all duration-500">
-              <span className="text-2xl text-slate-500 group-hover:text-purple-400">+</span>
-            </div>
-            <p className="text-xs font-bold text-slate-400 group-hover:text-white uppercase tracking-widest transition-colors">Your Logo Here</p>
-            <p className="text-[10px] text-slate-600 mt-2 uppercase transition-colors group-hover:text-slate-400">Sponsor VISION 1.0</p>
+          {/* Become a Sponsor Card */}
+          <div className="glass p-8 rounded-[2rem] border border-dashed border-white/20 flex flex-col items-center justify-center text-center min-h-[140px] group hover:bg-purple-500/5 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 cursor-pointer transition-all duration-500">
+            <p className="text-sm font-bold text-slate-400 group-hover:text-white uppercase tracking-widest transition-colors">Your Brand Here</p>
+            <p className="text-[10px] text-slate-600 mt-2 uppercase transition-colors group-hover:text-slate-400 font-bold">Partner with VISION 1.0</p>
           </div>
         </div>
 

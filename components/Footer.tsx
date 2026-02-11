@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
         </div>
         
         <div className="pt-8 border-t border-white/5 flex flex-col md:row justify-between items-center gap-4 text-xs text-slate-500 font-medium">
-          <p>© 2025 VISION 1.0. All Rights Reserved.</p>
+          <p>© 2026 VISION 1.0. All Rights Reserved.</p>
           <div className="flex gap-6">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
