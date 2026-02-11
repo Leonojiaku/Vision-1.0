@@ -22,6 +22,7 @@ const LoadingIcon = () => (
 const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete }) => {
   const [copied, setCopied] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,6 +52,10 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
       alert('Please select a category first (Step 1)');
       return;
     }
+    if (!fullName.trim()) {
+      alert('Please enter your full name');
+      return;
+    }
     if (!email) {
       alert('Please enter your email');
       return;
@@ -66,7 +71,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     const selectedCat = CATEGORIES.find(c => c.id === selectedCategoryId);
-    const text = encodeURIComponent(`Hello VISION 1.0 Team,\n\nI want to register for ${selectedCat?.name || 'the event'}.\nEmail: ${email}\n\nI have made the payment. Here is my proof:`);
+    const text = encodeURIComponent(`Hello VISION 1.0 Team,\n\nI want to register for ${selectedCat?.name || 'the event'}.\nName: ${fullName}\nEmail: ${email}\n\nI have made the payment. Here is my proof:`);
     const whatsappUrl = `https://wa.me/2348158983927?text=${text}`;
     
     window.open(whatsappUrl, '_blank');
@@ -74,7 +79,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
     onComplete();
   };
 
-  const isFormValid = selectedCategoryId && email && !emailError;
+  const isFormValid = selectedCategoryId && fullName.trim() && email && !emailError;
 
   return (
     <section className="py-24 px-6 bg-gradient-to-b from-slate-950 to-purple-900/20">
@@ -171,6 +176,18 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
             <div className="w-12 h-12 rounded-2xl purple-gradient flex items-center justify-center font-bold text-xl mb-6 shadow-lg shadow-purple-500/20">3</div>
             <h3 className="text-xl font-bold mb-6">Confirm details</h3>
             <div className="space-y-4 flex-grow relative z-10">
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 ml-1">Full Name</label>
+                <input
+                  type="text"
+                  value={fullName}
+                  disabled={isSubmitting}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Victory Emmanuel"
+                  className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-sm outline-none transition-all border-white/10 focus:border-purple-500 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                />
+              </div>
+
               <div>
                 <label className="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 ml-1">Email for Confirmation</label>
                 <input
