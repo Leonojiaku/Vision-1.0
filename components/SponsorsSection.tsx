@@ -4,7 +4,11 @@ import { SPONSORS } from '../constants';
 
 type TierFilter = 'All' | 'Diamond' | 'Gold' | 'Silver' | 'Partner';
 
-const SponsorsSection: React.FC = () => {
+interface SponsorsSectionProps {
+  onBecomeSponsorClick: () => void;
+}
+
+const SponsorsSection: React.FC<SponsorsSectionProps> = ({ onBecomeSponsorClick }) => {
   const [activeFilter, setActiveFilter] = useState<TierFilter>('All');
 
   const tiers: TierFilter[] = ['All', 'Diamond', 'Gold', 'Silver', 'Partner'];
@@ -64,11 +68,17 @@ const SponsorsSection: React.FC = () => {
             </div>
           ))}
           
-          {/* Become a Sponsor Card */}
-          <div className="glass p-8 rounded-[2rem] border border-dashed border-white/20 flex flex-col items-center justify-center text-center min-h-[140px] group hover:bg-purple-500/5 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 cursor-pointer transition-all duration-500">
+          {/* Become a Sponsor Card - Now Clickable */}
+          <button 
+            onClick={onBecomeSponsorClick}
+            className="glass p-8 rounded-[2rem] border border-dashed border-white/20 flex flex-col items-center justify-center text-center min-h-[140px] group hover:bg-purple-500/5 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 cursor-pointer transition-all duration-500 w-full"
+          >
             <p className="text-sm font-bold text-slate-400 group-hover:text-white uppercase tracking-widest transition-colors">Your Brand Here</p>
             <p className="text-[10px] text-slate-600 mt-2 uppercase transition-colors group-hover:text-slate-400 font-bold">Partner with VISION 1.0</p>
-          </div>
+            <div className="mt-3 text-purple-500/0 group-hover:text-purple-500 transition-all transform group-hover:translate-y-0 translate-y-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7-7-7m14-8l-7 7-7-7"></path></svg>
+            </div>
+          </button>
         </div>
 
         {filteredSponsors.length === 0 && (

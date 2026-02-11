@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import About from './components/About';
 import SponsorsSection from './components/SponsorsSection';
+import SponsorshipInfo from './components/SponsorshipInfo';
 import RegistrationSection from './components/RegistrationSection';
 import FAQSection from './components/FAQSection';
 import TestimonialsSection from './components/TestimonialsSection';
@@ -60,6 +61,7 @@ const App: React.FC = () => {
 
   const handleAboutClick = () => scrollToSection('about');
   const handleSponsorsClick = () => scrollToSection('sponsors');
+  const handleBecomeSponsorClick = () => scrollToSection('sponsorship');
 
   return (
     <div className="min-h-screen selection:bg-purple-500/30">
@@ -83,7 +85,11 @@ const App: React.FC = () => {
         </div>
 
         <div id="sponsors" className="scroll-mt-24">
-          <SponsorsSection />
+          <SponsorsSection onBecomeSponsorClick={handleBecomeSponsorClick} />
+        </div>
+
+        <div id="sponsorship" className="scroll-mt-24">
+          <SponsorshipInfo />
         </div>
 
         <div id="register" className="scroll-mt-24">
