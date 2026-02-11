@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface AuthModalProps {
   onClose: () => void;
@@ -16,8 +16,42 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({ fullName: '', email: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ fullName?: string; email?: string }>({});
+  const modalRef = useRef<HTMLDivElement>(null);
+  const firstInputRef = useRef<HTMLInputElement>(null);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  useEffect(() => {
+    // Focus first element on mount
+    firstInputRef.current?.focus();
+
+    // Focus Trap Logic
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key !== 'Tab' || !modalRef.current) return;
+
+      const focusableElements = modalRef.current.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (e.shiftKey) { // if shift key pressed for shift + tab combination
+        if (document.activeElement === firstElement) {
+          lastElement.focus(); // add focus for the last focusable element
+          e.preventDefault();
+        }
+      } else { // if tab key is pressed
+        if (document.activeElement === lastElement) { // if focused has reached to last focusable element
+          firstElement.focus(); // add focus for the first focusable element
+          e.preventDefault();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const validate = () => {
     const newErrors: { fullName?: string; email?: string } = {};
@@ -46,26 +80,39 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="glass max-w-md w-full p-8 rounded-[2.5rem] border border-white/10 relative shadow-2xl">
+    <div 
+      className="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-md animate-in fade-in duration-300"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div 
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-modal-title"
+        className="glass max-w-md w-full p-8 rounded-[2.5rem] border border-white/10 relative shadow-2xl"
+      >
         <button 
           onClick={onClose}
+          aria-label="Close modal"
           className="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
         
         <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold mb-2">Create Your Account</h3>
+          <h3 id="auth-modal-title" className="text-2xl font-bold mb-2">Create Your Account</h3>
           <p className="text-slate-400 text-sm">Join the Vision 1.0 community today.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 ml-1">Full Name</label>
+            <label htmlFor="fullName" className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 ml-1">Full Name</label>
             <input 
+              ref={firstInputRef}
+              id="fullName"
               type="text" 
               placeholder="e.g. Victory Emmanuel"
+              aria-invalid={!!errors.fullName}
               className={`w-full bg-white/5 border rounded-2xl px-6 py-4 focus:ring-2 outline-none transition-all placeholder:text-white/10 ${
                 errors.fullName ? 'border-red-500 focus:ring-red-500/20' : 'border-white/10 focus:ring-purple-500'
               }`}
@@ -76,17 +123,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
               }}
             />
             {errors.fullName && (
-              <div className="flex items-center text-red-400 text-[10px] mt-1.5 ml-1 font-bold tracking-tight">
+              <div role="alert" className="flex items-center text-red-400 text-[10px] mt-1.5 ml-1 font-bold tracking-tight">
                 <ErrorIcon />
                 {errors.fullName}
               </div>
             )}
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 ml-1">Email Address</label>
+            <label htmlFor="emailAddress" className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 ml-1">Email Address</label>
             <input 
+              id="emailAddress"
               type="email" 
               placeholder="example@futo.edu.ng"
+              aria-invalid={!!errors.email}
               className={`w-full bg-white/5 border rounded-2xl px-6 py-4 focus:ring-2 outline-none transition-all placeholder:text-white/10 ${
                 errors.email ? 'border-red-500 focus:ring-red-500/20' : 'border-white/10 focus:ring-purple-500'
               }`}
@@ -97,7 +146,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
               }}
             />
             {errors.email && (
-              <div className="flex items-center text-red-400 text-[10px] mt-1.5 ml-1 font-bold tracking-tight">
+              <div role="alert" className="flex items-center text-red-400 text-[10px] mt-1.5 ml-1 font-bold tracking-tight">
                 <ErrorIcon />
                 {errors.email}
               </div>

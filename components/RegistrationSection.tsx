@@ -12,11 +12,19 @@ const ErrorIcon = () => (
   </svg>
 );
 
+const LoadingIcon = () => (
+  <svg className="animate-spin h-4 w-4 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+  </svg>
+);
+
 const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete }) => {
   const [copied, setCopied] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -36,10 +44,34 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
     }
   };
 
-  const getWhatsAppLink = () => {
+  const handleRegistration = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    if (!selectedCategoryId) {
+      alert('Please select a category first (Step 1)');
+      return;
+    }
+    if (!email) {
+      alert('Please enter your email');
+      return;
+    }
+    if (emailError) {
+      alert('Please correct your email address');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    // Simulate a short delay for feedback
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
     const selectedCat = CATEGORIES.find(c => c.id === selectedCategoryId);
     const text = encodeURIComponent(`Hello VISION 1.0 Team,\n\nI want to register for ${selectedCat?.name || 'the event'}.\nEmail: ${email}\n\nI have made the payment. Here is my proof:`);
-    return `https://wa.me/2348158983927?text=${text}`;
+    const whatsappUrl = `https://wa.me/2348158983927?text=${text}`;
+    
+    window.open(whatsappUrl, '_blank');
+    setIsSubmitting(false);
+    onComplete();
   };
 
   const isFormValid = selectedCategoryId && email && !emailError;
@@ -64,12 +96,13 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat.id}
+                  disabled={isSubmitting}
                   onClick={() => setSelectedCategoryId(cat.id)}
                   className={`w-full flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 text-left group relative ${
                     selectedCategoryId === cat.id
                       ? 'bg-purple-600/20 border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.2)] scale-[1.02]'
                       : 'bg-white/5 border-white/5 hover:border-purple-500/30 hover:bg-white/10'
-                  }`}
+                  } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <div className="flex items-center gap-4">
                     <span className={`text-3xl transition-transform duration-300 ${selectedCategoryId === cat.id ? 'scale-110 drop-shadow-md' : 'grayscale group-hover:grayscale-0'}`}>
@@ -115,8 +148,9 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
                 <div className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
                   <p className="font-mono text-xl font-bold text-purple-300">{PAYMENT_DETAILS.accountNumber}</p>
                   <button 
+                    disabled={isSubmitting}
                     onClick={handleCopyAccount}
-                    className={`p-2 rounded-lg transition-all ${copied ? 'bg-green-500/20 text-green-400' : 'hover:bg-white/10 text-slate-400'}`}
+                    className={`p-2 rounded-lg transition-all ${copied ? 'bg-green-500/20 text-green-400' : 'hover:bg-white/10 text-slate-400'} ${isSubmitting ? 'cursor-not-allowed opacity-50' : ''}`}
                     title="Copy Account Number"
                   >
                     {copied ? '✅' : '📋'}
@@ -142,11 +176,12 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
                 <input
                   type="email"
                   value={email}
+                  disabled={isSubmitting}
                   onChange={handleEmailChange}
                   placeholder="yourname@gmail.com"
                   className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-sm outline-none transition-all ${
                     emailError ? 'border-red-500 focus:ring-1 focus:ring-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.1)]' : 'border-white/10 focus:border-purple-500'
-                  }`}
+                  } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 />
                 {emailError && (
                   <div className="flex items-center text-red-400 text-[10px] mt-2 ml-1 font-bold tracking-tight">
@@ -157,29 +192,23 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
               </div>
 
               <div className="space-y-3 pt-4">
-                <a 
-                  href={isFormValid ? getWhatsAppLink() : '#'} 
-                  target={isFormValid ? "_blank" : undefined}
-                  rel="noopener noreferrer"
-                  onClick={(e) => {
-                    if (!isFormValid) {
-                      e.preventDefault();
-                      if (!selectedCategoryId) alert('Please select a category first (Step 1)');
-                      else if (!email) alert('Please enter your email');
-                      else if (emailError) alert('Please correct your email address');
-                    } else {
-                      onComplete();
-                    }
-                  }}
-                  className={`flex items-center justify-between p-4 rounded-2xl border transition-all group ${
-                    isFormValid 
+                <button 
+                  disabled={isSubmitting}
+                  onClick={handleRegistration}
+                  className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all group ${
+                    isFormValid && !isSubmitting
                       ? 'bg-green-500/10 border-green-500/20 text-green-400 hover:bg-green-500/20 hover:scale-[1.02] shadow-lg shadow-green-500/10' 
                       : 'bg-white/5 border-white/5 text-slate-500 cursor-not-allowed grayscale'
                   }`}
                 >
-                  <span className="font-bold text-sm">Send Proof via WhatsApp</span>
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </a>
+                  <div className="flex items-center gap-3">
+                    {isSubmitting ? <LoadingIcon /> : null}
+                    <span className="font-bold text-sm">
+                      {isSubmitting ? 'Processing Registration...' : 'Send Proof via WhatsApp'}
+                    </span>
+                  </div>
+                  {!isSubmitting && <span className="group-hover:translate-x-1 transition-transform">→</span>}
+                </button>
                 <p className="text-[10px] text-center text-slate-500 font-medium">Attach your proof of payment in the chat.</p>
               </div>
             </div>

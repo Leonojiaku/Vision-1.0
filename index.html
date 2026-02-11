@@ -65,7 +65,7 @@
 <body class="bg-slate-950 text-white overflow-x-hidden">
     <div id="root"></div>
     
-    <!-- This script automatically finds and runs index.tsx -->
-    <script type="module" src="https://esm.sh/run"></script>
+    <!-- This script automatically finds and runs index.tsx. Added data-main for explicit entry on Vercel. -->
+    <script type="module" src="https://esm.sh/run" data-main="./index.tsx"></script>
 </body>
 </html>

@@ -1,8 +1,10 @@
 
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!.*\\.(?:tsx|ts|js|css|png|jpg|jpeg|svg|json|ico)$).*)$",
+      "source": "/((?!.*\\.(?:tsx|ts|js|css|png|jpg|jpeg|svg|json|ico|woff|woff2)$).*)$",
       "destination": "/index.html"
     }
   ]

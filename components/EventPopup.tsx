@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { EVENT_DATE } from '../constants';
 
 interface EventPopupProps {
@@ -8,14 +8,59 @@ interface EventPopupProps {
 }
 
 const EventPopup: React.FC<EventPopupProps> = ({ onClose, isRegistrationRemind }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const actionButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    // Focus action button on mount for quick dismissal/acknowledgement
+    actionButtonRef.current?.focus();
+
+    // Focus Trap Logic
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key !== 'Tab' || !modalRef.current) return;
+
+      const focusableElements = modalRef.current.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          lastElement.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          firstElement.focus();
+          e.preventDefault();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   return (
-    <div className="fixed inset-0 z-[400] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="glass max-w-md w-full p-8 rounded-[2.5rem] border border-white/10 relative text-center shadow-2xl overflow-hidden">
+    <div 
+      className="fixed inset-0 z-[400] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-300"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div 
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="popup-title"
+        className="glass max-w-md w-full p-8 rounded-[2.5rem] border border-white/10 relative text-center shadow-2xl overflow-hidden"
+      >
         {/* Animated accent */}
         <div className="absolute top-0 left-0 w-full h-1 purple-gradient"></div>
         
         <button 
           onClick={onClose}
+          aria-label="Close popup"
           className="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -25,7 +70,7 @@ const EventPopup: React.FC<EventPopupProps> = ({ onClose, isRegistrationRemind }
           ✨
         </div>
         
-        <h3 className="text-xl font-bold mb-4 tracking-tight leading-tight uppercase">
+        <h3 id="popup-title" className="text-xl font-bold mb-4 tracking-tight leading-tight uppercase">
           {isRegistrationRemind ? 'Account Created Successfully! 💜' : 'Attention FUTO Students!'}
         </h3>
         
@@ -41,6 +86,7 @@ const EventPopup: React.FC<EventPopupProps> = ({ onClose, isRegistrationRemind }
         </p>
         
         <button 
+          ref={actionButtonRef}
           onClick={onClose}
           className="w-full py-4 purple-gradient rounded-2xl font-bold text-white shadow-lg shadow-purple-500/20 hover:scale-[1.02] transition-all active:scale-95"
         >
