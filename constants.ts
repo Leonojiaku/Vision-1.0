@@ -18,6 +18,33 @@ export const CATEGORIES: RegistrationCategory[] = [
   { id: 'business', name: 'Business Pitch', price: '₦7,000', icon: '🚀' }
 ];
 
+export const FAQ_DATA = [
+  {
+    question: "What is VISION 1.0?",
+    answer: "VISION 1.0 is a premier convergence of brilliance, creative expression, and raw talent hosted at FUTO. It's a platform designed to showcase innovative tech, artistic talent, and business pitches from the brightest minds."
+  },
+  {
+    question: "Who is eligible to participate?",
+    answer: "The event is open to all Nigerian students from any tertiary institution across the country. We believe talent knows no bounds!"
+  },
+  {
+    question: "How do I register?",
+    answer: "Registration is a simple 3-step process: Select your category, make the payment to the provided account details, and send your proof of payment via the integrated WhatsApp link on this site."
+  },
+  {
+    question: "What are the registration fees?",
+    answer: "Fees are tiered by category: Talent Showcase is ₦3,000, Tech Presentation is ₦5,000, and Business Pitch is ₦7,000."
+  },
+  {
+    question: "What is the total prize pool?",
+    answer: "Winners across all categories will share from a total prize pool exceeding ₦100,000, along with potential mentorship and resource opportunities."
+  },
+  {
+    question: "When and where is the event?",
+    answer: `The event will take place on ${EVENT_DATE} at the Federal University of Technology, Owerri (FUTO).`
+  }
+];
+
 export const SPONSORS: Sponsor[] = [
   { name: "Pixel Nox", tier: "Diamond", logo: "https://api.dicebear.com/7.x/shapes/svg?seed=PixelNox&backgroundColor=4c1d95" },
   { name: "Divine Bites", tier: "Diamond", logo: "https://api.dicebear.com/7.x/shapes/svg?seed=DivineBites&backgroundColor=db2777" },

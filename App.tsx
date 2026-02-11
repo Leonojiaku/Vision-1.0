@@ -5,6 +5,7 @@ import Hero from './components/Hero';
 import About from './components/About';
 import SponsorsSection from './components/SponsorsSection';
 import RegistrationSection from './components/RegistrationSection';
+import FAQSection from './components/FAQSection';
 import WhatsAppButton from './components/WhatsAppButton';
 import Footer from './components/Footer';
 import EventPopup from './components/EventPopup';
@@ -83,6 +84,10 @@ const App: React.FC = () => {
 
         <div id="register" className="scroll-mt-24">
           <RegistrationSection onComplete={() => setShowPopup(true)} />
+        </div>
+
+        <div id="faq" className="scroll-mt-24">
+          <FAQSection />
         </div>
       </main>
 

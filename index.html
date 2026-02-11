@@ -35,7 +35,6 @@
             -webkit-text-fill-color: transparent;
         }
         
-        /* Custom scrollbar for premium feel */
         ::-webkit-scrollbar {
           width: 8px;
         }
@@ -65,7 +64,11 @@
 <body class="bg-slate-950 text-white overflow-x-hidden">
     <div id="root"></div>
     
-    <!-- This script automatically finds and runs index.tsx. Added data-main for explicit entry on Vercel. -->
-    <script type="module" src="https://esm.sh/run" data-main="./index.tsx"></script>
+    <!-- Use the ESM runner to compile TSX in the browser -->
+    <script type="module" src="https://esm.sh/run"></script>
+    <script type="module">
+        // Explicitly import the entry point
+        import "./index.tsx";
+    </script>
 </body>
 </html>
