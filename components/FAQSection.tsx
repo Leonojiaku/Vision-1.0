@@ -15,7 +15,7 @@ const FAQSection: React.FC = () => {
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-purple-600/5 blur-[120px] rounded-full"></div>
       
       <div className="max-w-4xl mx-auto relative z-10">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 animate-slide-up">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">Frequently Asked Questions</h2>
           <p className="text-slate-400">Everything you need to know about VISION 1.0.</p>
         </div>
@@ -24,16 +24,17 @@ const FAQSection: React.FC = () => {
           {FAQ_DATA.map((item, index) => (
             <div 
               key={index}
-              className={`glass rounded-3xl border border-white/5 overflow-hidden transition-all duration-300 ${
-                activeIndex === index ? 'bg-white/10 border-purple-500/30' : 'hover:bg-white/5'
+              className={`glass rounded-3xl border border-white/5 overflow-hidden transition-all duration-300 animate-slide-up ${
+                activeIndex === index ? 'bg-white/10 border-purple-500/30 shadow-lg shadow-purple-500/5' : 'hover:bg-white/5'
               }`}
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               <button
                 onClick={() => toggleAccordion(index)}
-                className="w-full px-8 py-6 flex items-center justify-between text-left focus:outline-none"
+                className="w-full px-8 py-6 flex items-center justify-between text-left focus:outline-none group"
                 aria-expanded={activeIndex === index}
               >
-                <span className={`font-bold text-lg transition-colors ${activeIndex === index ? 'text-purple-400' : 'text-white'}`}>
+                <span className={`font-bold text-lg transition-colors ${activeIndex === index ? 'text-purple-400' : 'text-white group-hover:text-purple-300'}`}>
                   {item.question}
                 </span>
                 <span className={`ml-4 transform transition-transform duration-300 ${activeIndex === index ? 'rotate-180' : ''}`}>
@@ -57,7 +58,7 @@ const FAQSection: React.FC = () => {
           ))}
         </div>
 
-        <div className="mt-16 text-center">
+        <div className="mt-16 text-center animate-slide-up" style={{ animationDelay: '600ms' }}>
           <p className="text-sm text-slate-500">
             Still have questions? <a href="https://wa.me/2348158983927" target="_blank" rel="noopener noreferrer" className="text-purple-400 font-bold hover:underline">Contact Support</a>
           </p>

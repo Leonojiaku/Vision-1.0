@@ -24,7 +24,12 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  
+  // Refined Error States
+  const [fullNameError, setFullNameError] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [categoryError, setCategoryError] = useState('');
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,35 +40,58 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFullName(value);
+    if (value.trim()) {
+      setFullNameError('');
+    }
+  };
+
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
-    if (value && !emailRegex.test(value)) {
+    if (!value) {
+      setEmailError('');
+    } else if (!emailRegex.test(value)) {
       setEmailError('Please enter a valid email address');
     } else {
       setEmailError('');
     }
   };
 
+  const handleCategorySelect = (id: string) => {
+    setSelectedCategoryId(id);
+    setCategoryError('');
+  };
+
   const handleRegistration = async (e: React.MouseEvent) => {
     e.preventDefault();
     
+    // Clear previous errors
+    setCategoryError('');
+    setFullNameError('');
+    setEmailError('');
+
+    let hasError = false;
+
     if (!selectedCategoryId) {
-      alert('Please select a category first (Step 1)');
-      return;
+      setCategoryError('Please select a category above to continue');
+      hasError = true;
     }
     if (!fullName.trim()) {
-      alert('Please enter your full name');
-      return;
+      setFullNameError('Full name is required for registration');
+      hasError = true;
     }
     if (!email) {
-      alert('Please enter your email');
-      return;
+      setEmailError('Email address is required for confirmation');
+      hasError = true;
+    } else if (!emailRegex.test(email)) {
+      setEmailError('Please provide a valid email address');
+      hasError = true;
     }
-    if (emailError) {
-      alert('Please correct your email address');
-      return;
-    }
+
+    if (hasError) return;
 
     setIsSubmitting(true);
     
@@ -102,11 +130,13 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
                 <button
                   key={cat.id}
                   disabled={isSubmitting}
-                  onClick={() => setSelectedCategoryId(cat.id)}
+                  onClick={() => handleCategorySelect(cat.id)}
                   className={`w-full flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 text-left group relative ${
                     selectedCategoryId === cat.id
                       ? 'bg-purple-600/20 border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.2)] scale-[1.02]'
-                      : 'bg-white/5 border-white/5 hover:border-purple-500/30 hover:bg-white/10'
+                      : categoryError 
+                        ? 'bg-red-500/5 border-red-500/30' 
+                        : 'bg-white/5 border-white/5 hover:border-purple-500/30 hover:bg-white/10'
                   } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <div className="flex items-center gap-4">
@@ -128,13 +158,17 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
                     </span>
                   </div>
 
-                  {/* Highlight bar */}
                   <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full transition-all duration-300 ${selectedCategoryId === cat.id ? 'bg-purple-500 opacity-100' : 'bg-transparent opacity-0'}`}></div>
                 </button>
               ))}
+              
+              {categoryError && (
+                <div className="flex items-center text-red-400 text-[10px] mt-2 ml-1 font-bold tracking-tight animate-slide-in-error">
+                  <ErrorIcon />
+                  {categoryError}
+                </div>
+              )}
             </div>
-            
-            {/* Background glowing orb for selection area */}
             <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-purple-600/10 blur-[60px] pointer-events-none"></div>
           </div>
 
@@ -182,10 +216,18 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
                   type="text"
                   value={fullName}
                   disabled={isSubmitting}
-                  onChange={(e) => setFullName(e.target.value)}
+                  onChange={handleFullNameChange}
                   placeholder="Victory Emmanuel"
-                  className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-sm outline-none transition-all border-white/10 focus:border-purple-500 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-sm outline-none transition-all ${
+                    fullNameError ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-purple-500'
+                  } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 />
+                {fullNameError && (
+                  <div className="flex items-center text-red-400 text-[10px] mt-2 ml-1 font-bold tracking-tight animate-slide-in-error">
+                    <ErrorIcon />
+                    {fullNameError}
+                  </div>
+                )}
               </div>
 
               <div>
@@ -197,11 +239,11 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
                   onChange={handleEmailChange}
                   placeholder="yourname@gmail.com"
                   className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-sm outline-none transition-all ${
-                    emailError ? 'border-red-500 focus:ring-1 focus:ring-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.1)]' : 'border-white/10 focus:border-purple-500'
+                    emailError ? 'border-red-500/50 focus:border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.05)]' : 'border-white/10 focus:border-purple-500'
                   } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 />
                 {emailError && (
-                  <div className="flex items-center text-red-400 text-[10px] mt-2 ml-1 font-bold tracking-tight">
+                  <div className="flex items-center text-red-400 text-[10px] mt-2 ml-1 font-bold tracking-tight animate-slide-in-error">
                     <ErrorIcon />
                     {emailError}
                   </div>

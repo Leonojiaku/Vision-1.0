@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SPONSORS } from '../constants';
 
 type TierFilter = 'All' | 'Diamond' | 'Gold' | 'Silver' | 'Partner';
@@ -10,12 +10,20 @@ interface SponsorsSectionProps {
 
 const SponsorsSection: React.FC<SponsorsSectionProps> = ({ onBecomeSponsorClick }) => {
   const [activeFilter, setActiveFilter] = useState<TierFilter>('All');
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const tiers: TierFilter[] = ['All', 'Diamond', 'Gold', 'Silver', 'Partner'];
 
   const filteredSponsors = SPONSORS.filter(
     (sponsor) => activeFilter === 'All' || sponsor.tier === activeFilter
   );
+
+  // Re-trigger animation when filter changes
+  useEffect(() => {
+    setIsAnimating(true);
+    const timer = setTimeout(() => setIsAnimating(false), 50);
+    return () => clearTimeout(timer);
+  }, [activeFilter]);
 
   return (
     <section className="py-24 px-6 relative overflow-hidden">
@@ -49,10 +57,11 @@ const SponsorsSection: React.FC<SponsorsSectionProps> = ({ onBecomeSponsorClick 
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 min-h-[300px]">
-          {filteredSponsors.map((sponsor, idx) => (
+          {!isAnimating && filteredSponsors.map((sponsor, idx) => (
             <div 
-              key={`${sponsor.name}-${idx}`}
-              className="glass p-8 rounded-[2rem] border border-white/5 hover:border-purple-500/50 hover:bg-white/10 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 group flex flex-col items-center justify-center text-center min-h-[140px] animate-in fade-in zoom-in-95 duration-500"
+              key={`${activeFilter}-${sponsor.name}-${idx}`}
+              className="glass p-8 rounded-[2rem] border border-white/5 hover:border-purple-500/50 hover:bg-white/10 hover:shadow-[0_20px_50px_-12px_rgba(168,85,247,0.3)] hover:scale-105 hover:-rotate-1 transition-all duration-500 group flex flex-col items-center justify-center text-center min-h-[140px] animate-reveal-up"
+              style={{ animationDelay: `${idx * 50}ms` }}
             >
               <h3 className="font-bold text-lg md:text-xl mb-3 tracking-tight group-hover:text-purple-400 transition-colors">
                 {sponsor.name}
@@ -69,20 +78,23 @@ const SponsorsSection: React.FC<SponsorsSectionProps> = ({ onBecomeSponsorClick 
           ))}
           
           {/* Become a Sponsor Card - Now Clickable */}
-          <button 
-            onClick={onBecomeSponsorClick}
-            className="glass p-8 rounded-[2rem] border border-dashed border-white/20 flex flex-col items-center justify-center text-center min-h-[140px] group hover:bg-purple-500/5 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 cursor-pointer transition-all duration-500 w-full"
-          >
-            <p className="text-sm font-bold text-slate-400 group-hover:text-white uppercase tracking-widest transition-colors">Your Brand Here</p>
-            <p className="text-[10px] text-slate-600 mt-2 uppercase transition-colors group-hover:text-slate-400 font-bold">Partner with VISION 1.0</p>
-            <div className="mt-3 text-purple-500/0 group-hover:text-purple-500 transition-all transform group-hover:translate-y-0 translate-y-2">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7-7-7m14-8l-7 7-7-7"></path></svg>
-            </div>
-          </button>
+          {!isAnimating && (
+            <button 
+              onClick={onBecomeSponsorClick}
+              className="glass p-8 rounded-[2rem] border border-dashed border-white/20 flex flex-col items-center justify-center text-center min-h-[140px] group hover:bg-purple-500/5 hover:border-purple-500/50 hover:shadow-[0_20px_50px_-12px_rgba(168,85,247,0.3)] hover:scale-105 hover:rotate-1 cursor-pointer transition-all duration-500 w-full animate-reveal-up"
+              style={{ animationDelay: `${filteredSponsors.length * 50}ms` }}
+            >
+              <p className="text-sm font-bold text-slate-400 group-hover:text-white uppercase tracking-widest transition-colors">Your Brand Here</p>
+              <p className="text-[10px] text-slate-600 mt-2 uppercase transition-colors group-hover:text-slate-400 font-bold">Partner with VISION 1.0</p>
+              <div className="mt-3 text-purple-500/0 group-hover:text-purple-500 transition-all transform group-hover:translate-y-0 translate-y-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7-7-7m14-8l-7 7-7-7"></path></svg>
+              </div>
+            </button>
+          )}
         </div>
 
-        {filteredSponsors.length === 0 && (
-          <div className="text-center py-20 text-slate-500 font-medium animate-in fade-in duration-500">
+        {!isAnimating && filteredSponsors.length === 0 && (
+          <div className="text-center py-20 text-slate-500 font-medium animate-reveal-up">
             No sponsors found in the "{activeFilter}" tier yet.
           </div>
         )}
