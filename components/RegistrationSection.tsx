@@ -12,8 +12,14 @@ const ErrorIcon = () => (
   </svg>
 );
 
+const SuccessIcon = () => (
+  <svg className="w-3 h-3 mr-1.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+  </svg>
+);
+
 const LoadingIcon = () => (
-  <svg className="animate-spin h-4 w-4 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+  <svg className="animate-spin h-5 w-5 text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
   </svg>
@@ -31,6 +37,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
   const [categoryError, setCategoryError] = useState('');
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessMsg, setShowSuccessMsg] = useState(false);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -72,6 +79,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
     setCategoryError('');
     setFullNameError('');
     setEmailError('');
+    setShowSuccessMsg(false);
 
     let hasError = false;
 
@@ -96,7 +104,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
     setIsSubmitting(true);
     
     // Simulate a short delay for feedback
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
     const selectedCat = CATEGORIES.find(c => c.id === selectedCategoryId);
     const text = encodeURIComponent(`Hello VISION 1.0 Team,\n\nI want to register for ${selectedCat?.name || 'the event'}.\nName: ${fullName}\nEmail: ${email}\n\nI have made the payment. Here is my proof:`);
@@ -104,10 +112,25 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
     
     window.open(whatsappUrl, '_blank');
     setIsSubmitting(false);
+    setShowSuccessMsg(true);
+    
+    // Clear success message after 4 seconds
+    setTimeout(() => setShowSuccessMsg(false), 4000);
+    
     onComplete();
   };
 
-  const isFormValid = selectedCategoryId && fullName.trim() && email && !emailError;
+  const isFormValid = !!(selectedCategoryId && fullName.trim() && email && !emailError);
+
+  const getButtonStyles = () => {
+    if (isSubmitting) {
+      return 'bg-purple-500/20 border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.2)] text-purple-300 animate-pulse cursor-wait';
+    }
+    if (isFormValid) {
+      return 'bg-green-500/10 border-green-500/20 text-green-400 hover:bg-green-500/20 hover:scale-[1.02] shadow-lg shadow-green-500/10 cursor-pointer';
+    }
+    return 'bg-white/5 border-white/5 text-slate-500 cursor-not-allowed grayscale';
+  };
 
   return (
     <section className="py-24 px-6 bg-gradient-to-b from-slate-950 to-purple-900/20">
@@ -252,22 +275,26 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ onComplete })
 
               <div className="space-y-3 pt-4">
                 <button 
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isFormValid}
                   onClick={handleRegistration}
-                  className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all group ${
-                    isFormValid && !isSubmitting
-                      ? 'bg-green-500/10 border-green-500/20 text-green-400 hover:bg-green-500/20 hover:scale-[1.02] shadow-lg shadow-green-500/10' 
-                      : 'bg-white/5 border-white/5 text-slate-500 cursor-not-allowed grayscale'
-                  }`}
+                  className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all group ${getButtonStyles()}`}
                 >
                   <div className="flex items-center gap-3">
                     {isSubmitting ? <LoadingIcon /> : null}
                     <span className="font-bold text-sm">
-                      {isSubmitting ? 'Processing Registration...' : 'Send Proof via WhatsApp'}
+                      {isSubmitting ? 'Opening WhatsApp...' : 'Send Proof via WhatsApp'}
                     </span>
                   </div>
                   {!isSubmitting && <span className="group-hover:translate-x-1 transition-transform">→</span>}
                 </button>
+                
+                {showSuccessMsg && (
+                  <div className="flex items-center justify-center text-green-400 text-[10px] mt-2 font-bold tracking-tight animate-reveal-up">
+                    <SuccessIcon />
+                    Proof of payment link opened!
+                  </div>
+                )}
+                
                 <p className="text-[10px] text-center text-slate-500 font-medium">Attach your proof of payment in the chat.</p>
               </div>
             </div>

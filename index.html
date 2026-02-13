@@ -75,13 +75,19 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
         .animate-reveal-up {
             animation: revealUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
         }
 
         .animate-slide-in-error {
-            animation: slideInError 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: slideInError 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .animate-slide-left {
@@ -97,6 +103,10 @@
         .animate-slide-up {
             animation: slideInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
+        }
+
+        .animate-shake {
+            animation: shake 0.2s ease-in-out 0s 2;
         }
     </style>
 <script type="importmap">

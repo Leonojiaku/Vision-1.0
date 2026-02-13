@@ -16,6 +16,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({ fullName: '', email: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ fullName?: string; email?: string }>({});
+  const [shakeFields, setShakeFields] = useState<{ fullName?: boolean; email?: boolean }>({});
   const modalRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
 
@@ -36,14 +37,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
       const firstElement = focusableElements[0] as HTMLElement;
       const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
 
-      if (e.shiftKey) { // if shift key pressed for shift + tab combination
+      if (e.shiftKey) { 
         if (document.activeElement === firstElement) {
-          lastElement.focus(); // add focus for the last focusable element
+          lastElement.focus();
           e.preventDefault();
         }
-      } else { // if tab key is pressed
-        if (document.activeElement === lastElement) { // if focused has reached to last focusable element
-          firstElement.focus(); // add focus for the first focusable element
+      } else { 
+        if (document.activeElement === lastElement) { 
+          firstElement.focus();
           e.preventDefault();
         }
       }
@@ -55,15 +56,29 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
 
   const validate = () => {
     const newErrors: { fullName?: string; email?: string } = {};
+    const newShakes: { fullName?: boolean; email?: boolean } = {};
+    
     if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
+      newErrors.fullName = 'Full name is required to continue';
+      newShakes.fullName = true;
     }
+    
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Email address is required';
+      newShakes.email = true;
     } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = 'Please provide a valid email address';
+      newShakes.email = true;
     }
+    
     setErrors(newErrors);
+    setShakeFields(newShakes);
+    
+    // Reset shake after animation completes
+    if (Object.keys(newShakes).length > 0) {
+      setTimeout(() => setShakeFields({}), 500);
+    }
+    
     return Object.keys(newErrors).length === 0;
   };
 
@@ -114,8 +129,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
               placeholder="e.g. Victory Emmanuel"
               aria-invalid={!!errors.fullName}
               className={`w-full bg-white/5 border rounded-2xl px-6 py-4 focus:ring-2 outline-none transition-all placeholder:text-white/10 ${
-                errors.fullName ? 'border-red-500 focus:ring-red-500/20' : 'border-white/10 focus:ring-purple-500'
-              }`}
+                errors.fullName 
+                  ? 'border-red-500 bg-red-500/5 shadow-[0_0_15px_rgba(239,68,68,0.1)] focus:ring-red-500/20' 
+                  : 'border-white/10 focus:ring-purple-500'
+              } ${shakeFields.fullName ? 'animate-shake' : ''}`}
               value={formData.fullName}
               onChange={(e) => {
                 setFormData({ ...formData, fullName: e.target.value });
@@ -123,7 +140,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
               }}
             />
             {errors.fullName && (
-              <div role="alert" className="flex items-center text-red-400 text-[10px] mt-1.5 ml-1 font-bold tracking-tight">
+              <div role="alert" className="flex items-center text-red-400 text-[10px] mt-2 ml-1 font-bold tracking-tight animate-slide-in-error">
                 <ErrorIcon />
                 {errors.fullName}
               </div>
@@ -134,11 +151,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
             <input 
               id="emailAddress"
               type="email" 
-              placeholder="example@futo.edu.ng"
+              placeholder="example@gmail.com"
               aria-invalid={!!errors.email}
               className={`w-full bg-white/5 border rounded-2xl px-6 py-4 focus:ring-2 outline-none transition-all placeholder:text-white/10 ${
-                errors.email ? 'border-red-500 focus:ring-red-500/20' : 'border-white/10 focus:ring-purple-500'
-              }`}
+                errors.email 
+                  ? 'border-red-500 bg-red-500/5 shadow-[0_0_15px_rgba(239,68,68,0.1)] focus:ring-red-500/20' 
+                  : 'border-white/10 focus:ring-purple-500'
+              } ${shakeFields.email ? 'animate-shake' : ''}`}
               value={formData.email}
               onChange={(e) => {
                 setFormData({ ...formData, email: e.target.value });
@@ -146,7 +165,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
               }}
             />
             {errors.email && (
-              <div role="alert" className="flex items-center text-red-400 text-[10px] mt-1.5 ml-1 font-bold tracking-tight">
+              <div role="alert" className="flex items-center text-red-400 text-[10px] mt-2 ml-1 font-bold tracking-tight animate-slide-in-error">
                 <ErrorIcon />
                 {errors.email}
               </div>
@@ -158,7 +177,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
             disabled={isSubmitting}
             className="w-full py-4 mt-4 purple-gradient rounded-2xl font-bold text-lg shadow-xl shadow-purple-500/20 hover:scale-[1.02] transition-transform active:scale-95 disabled:opacity-50"
           >
-            {isSubmitting ? 'Creating...' : 'Create Account'}
+            {isSubmitting ? 'Verifying Details...' : 'Create Account'}
           </button>
         </form>
       </div>

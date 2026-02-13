@@ -103,8 +103,8 @@ const Hero: React.FC<HeroProps> = ({ onRegisterClick, onLearnMoreClick, onShareC
         </div>
         
         <h1 className="text-5xl md:text-8xl font-bold mb-6 tracking-tight flex flex-col items-center">
-          <span className="block animate-slide-left">STEP INTO THE</span>
-          <span className="text-gradient block animate-slide-right" style={{ animationDelay: '200ms' }}>VISION</span>
+          <span className="block animate-slide-left" style={{ animationDuration: '1.2s' }}>STEP INTO THE</span>
+          <span className="text-gradient block animate-slide-right" style={{ animationDelay: '300ms', animationDuration: '1.2s' }}>VISION</span>
         </h1>
 
         {/* Countdown Timer */}
