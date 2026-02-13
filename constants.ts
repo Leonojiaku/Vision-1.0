@@ -3,7 +3,7 @@ import { Sponsor, WhatsAppOption, RegistrationCategory } from './types';
 
 export const EVENT_DATE = "Friday, 20th Feb. 2026";
 export const VENUE = "FUTO";
-export const REG_DEADLINE = "12th Feb. 2026";
+export const REG_DEADLINE = "14th Feb. 2026";
 export const PRIZE_POOL = "₦100,000";
 
 export const PAYMENT_DETAILS = {

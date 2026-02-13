@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PRIZE_POOL } from '../constants';
 
 interface HeroProps {
@@ -8,7 +8,53 @@ interface HeroProps {
   onShareClick: () => void;
 }
 
+interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
 const Hero: React.FC<HeroProps> = ({ onRegisterClick, onLearnMoreClick, onShareClick }) => {
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    // Target date: Feb 20, 2026 at 10:00 AM
+    const targetDate = new Date('2026-02-20T10:00:00').getTime();
+
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const TimerBlock = ({ value, label }: { value: number; label: string }) => (
+    <div className="flex flex-col items-center px-4 py-2 min-w-[80px] md:min-w-[100px] glass rounded-2xl border border-white/10 hover:border-purple-500/30 transition-all group">
+      <span className="text-2xl md:text-4xl font-black text-gradient group-hover:scale-110 transition-transform">
+        {value.toString().padStart(2, '0')}
+      </span>
+      <span className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest mt-1 group-hover:text-purple-400 transition-colors">
+        {label}
+      </span>
+    </div>
+  );
+
   return (
     <section className="relative min-h-screen pt-32 pb-20 px-6 flex flex-col items-center justify-center text-center overflow-hidden">
       {/* Background Orbs */}
@@ -25,6 +71,17 @@ const Hero: React.FC<HeroProps> = ({ onRegisterClick, onLearnMoreClick, onShareC
           STEP INTO THE <br />
           <span className="text-gradient">VISION</span>
         </h1>
+
+        {/* Countdown Timer */}
+        <div className="flex items-center justify-center gap-3 md:gap-4 mb-10 animate-in fade-in slide-in-from-top-4 duration-1000">
+          <TimerBlock value={timeLeft.days} label="Days" />
+          <div className="text-2xl font-bold text-slate-700 pb-4 hidden md:block">:</div>
+          <TimerBlock value={timeLeft.hours} label="Hours" />
+          <div className="text-2xl font-bold text-slate-700 pb-4 hidden md:block">:</div>
+          <TimerBlock value={timeLeft.minutes} label="Mins" />
+          <div className="text-2xl font-bold text-slate-700 pb-4 hidden md:block">:</div>
+          <TimerBlock value={timeLeft.seconds} label="Secs" />
+        </div>
         
         <div className="bg-purple-500/10 border border-purple-500/30 rounded-2xl py-3 px-6 inline-block mb-10 transform hover:scale-105 transition-all">
           <p className="text-slate-300 text-sm font-medium tracking-widest uppercase mb-1">Total Prize Pool</p>
